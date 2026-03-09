@@ -1,15 +1,14 @@
-function flat(arr) {
-  return arr.reduce((acc, val) => {
-    // console.log(acc, val);
-    if (Array.isArray(val)) {
-      acc.push(...val);
-    } else {
-      acc.push(val);
-    }
-    return acc;
-  }, []);
-}
+console.log('1');
+Promise.resolve().then(() => console.log('2'));
+setTimeout(() => console.log('3'), 0);
+new Promise(res => {
+  console.log('4');
+  res();
+}).then(() => console.log('5'));
+// 输出顺序及原因？
 
-// 示例使用
-const nestedArray = [1, [2, 3], [4, [5, 6]]];
-console.log(flat(nestedArray)); // 输出: [1, 2, 3, 4, 5, 6]
+// 1
+// 4
+// 2
+// 5
+// 3

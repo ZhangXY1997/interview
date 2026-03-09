@@ -1,18 +1,28 @@
 function mergeDeepList(arr) {
   let map = new Map();
   const result = [];
+  // for (let i = 0; i < arr.length; i++) {
+  //   map[arr[i].id] = arr[i];
+  // }
   for (let i = 0; i < arr.length; i++) {
-    map[arr[i].id] = arr[i];
-  }
-  for (let i = 0; i < arr.length; i++) {
+    if (!map[arr[i].id]) {
+      map[arr[i].id] = {};
+    }
+
+    map[arr[i].id] = { ...arr[i], ...map[arr[i].id] };
+
     if (arr[i].pid) {
+      if (!map[arr[i].pid]) {
+        map[arr[i].pid] = {};
+      }
       if (!map[arr[i].pid].children) {
         map[arr[i].pid].children = [];
       }
-      map[arr[i].pid].children.push(arr[i]);
-      delete arr[i].pid;
+      map[arr[i].pid].children.push(map[arr[i].id]);
+
+      delete map[arr[i].id].pid;
     } else {
-      result.push(arr[i]);
+      result.push(map[arr[i].id]);
     }
   }
   return JSON.stringify(result);
@@ -79,7 +89,7 @@ function treeToList(data, parentId) {
 }
 
 let listData = treeToList(data, null);
-// console.log(listData);
+console.log(listData);
 
 // 数组转树
 function listToTree(list) {
@@ -107,6 +117,7 @@ function listToTree(list) {
   }
   console.log(result);
 }
+
 // listToTree(listData);
 
 function convert(list, id = "") {
@@ -121,3 +132,65 @@ function convert(list, id = "") {
 }
 
 console.log(convert(arr));
+
+
+// 2025.01.07 数组转树
+let arr1 = [
+  { id: 1, name: '部门1', pid: 0 },
+  { id: 2, name: '部门2', pid: 1 },
+  { id: 3, name: '部门3', pid: 1 },
+  { id: 4, name: '部门4', pid: 3 },
+  { id: 5, name: '部门5', pid: 4 },
+];
+// 期望输出
+// [
+//   {
+//       "id": 1,
+//       "name": "部门1",
+//       "pid": 0,
+//       "children": [
+//           {
+//               "id": 2,
+//               "name": "部门2",
+//               "pid": 1,
+//               "children": []
+//           },
+//           {
+//               "id": 3,
+//               "name": "部门3",
+//               "pid": 1,
+//               "children": [
+//                   // ... 部门4 ...
+//               ]
+//           }
+//       ]
+//   }
+// ]
+
+function listToTreeNew(arr) {
+  const res = [];
+  const map = new Map();
+  // 先循环的目的，防止父元素出现在子元素的后面
+  arr.forEach((item) => {
+    // 浅拷贝一份，不污染数据
+    const newItem = {
+      ...item,
+      children: [],
+    };
+    map.set(newItem.id, newItem);
+  });
+
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].pid == 0) {
+      res.push(arr[i]);
+    } else {
+      if (map.has(arr[i].pid)) {
+        const parent = map.get(arr[i].pid);
+        parent.children.push(arr[i]);
+      }
+    }
+  }
+  return res;
+}
+
+console.log(JSON.stringify(listToTreeNew(arr1)))

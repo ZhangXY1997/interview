@@ -1,0 +1,1 @@
+res = res.concat(item.myFlat2(depth - 1))
