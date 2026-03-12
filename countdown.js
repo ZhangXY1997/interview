@@ -1,4 +1,31 @@
 function countDown(ddl) {
+  let timer;
+  let startTime = Date.now();
+  function helper() {
+    const curTime = Date.now();
+    const diff = curTime - startTime;
+    const time = ddl - Date.now();
+    if (time < 0) {
+      timer && clearTimeout(timer);
+      return;
+    }
+
+    const hour = Math.floor(time / 1000 / 60 / 60);
+    const min = Math.floor((time / 1000 / 60) % 60);
+    const sec = Math.floor((time / 1000) % 60);
+
+    console.log(`${hour}h${min}m${sec}s`);
+    startTime = curTime;
+    timer = setTimeout(() => {
+      helper();
+    }, 1000 - (diff - 1000));
+  }
+
+  helper();
+}
+
+
+function countDown(ddl) {
 	let timer;
 	let startTime = Date.now();
 
