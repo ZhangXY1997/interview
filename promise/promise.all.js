@@ -1,24 +1,28 @@
-function promiseAll(promises) {
+Promise.myAll = function (promiseArray) {
   return new Promise((resolve, reject) => {
-    if (!Array.isArray(promises)) {
-      return reject("error");
+    if (!Array.isArray(promiseArray)) {
+      reject(new TypeError('params must be an array'));
+      return;
     }
-    let result = [];
-    let promiseCount = 0;
-    for (let i = 0; i < promises.length; i++) {
-      promises[i]()
-        .then((res) => {
-          console.log(i, res);
-          result[i] = res;
-          promiseCount++;
-          if (promiseCount === promises.length) {
+    if (promiseArray.length === 0) {
+      resolve([]);
+      return;
+    }
+    const result = new Array(promiseArray.length);
+    let count = 0;
+    promiseArray.forEach((promise, index) => {
+      Promise.resolve(promise)
+        .then(res => {
+          result[index] = res;
+          count++;
+          if (count === promiseArray.length) {
             resolve(result);
           }
         })
-        .catch((err) => reject(err));
-    }
+        .catch(reject);
+    });
   });
-}
+};
 
 function req(res, delay) {
   return new Promise((resolve, reject) => {
